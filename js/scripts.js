@@ -37,17 +37,17 @@ function PlayerTracker(username) {
   this.turnScore = 0;
   this.roll = function() {
     var roll = Math.floor((Math.random() * 6) + 1);
-    console.log(active, "roll = " + roll)
+    $("#output").append("<li>" + active + " roll = " + roll)
     if (roll === 1) {
       debugger;
       this.turnScore = 0;
-      console.log(active, "turnScore = " + this.turnScore)
+      $("#output").append("turnScore = " + this.turnScore)
       this.endTurn();
     } else {
       this.turnScore += roll
-      console.log(active, "turnScore = " + this.turnScore)
+      $("#output").append("turnScore = " + this.turnScore)
     }
-
+    testAI();
   }
   this.endTurn = function() {
     this.totalScore += this.turnScore;
@@ -57,17 +57,43 @@ function PlayerTracker(username) {
     } else {
       active = player1;
     }
+    testAI();
     console.log(players)
   }
   this.endGame = function() {
-    if (this.totalScore + this.turnScore >= 20) {
+    if (this.totalScore + this.turnScore >= 5) {
       alert(this.userName + " Wins!!")
+      clearBoard();
     }
   }
 }
 
 function createUser(username) {
   players[username] = new PlayerTracker(username);
+}
+
+function testAI (active) {
+  if (active === "computer") {
+    AI()
+  }
+}
+
+function AI() {
+  if (players[active].turnScore < 20) {
+    players[active].roll();
+  } else {
+    players[active].endTurn();
+  }
+}
+
+function clearBoard() {
+  $("#player1").val("");
+  $("#player2").val("");
+  active = "";
+  player1 = "";
+  player2 = "";
+  players = {};
+  $("#output").empty();
 }
 
 $(document).ready(function() {
@@ -78,15 +104,26 @@ $(document).ready(function() {
     createUser(player1);
     createUser(player2);
     active = player1;
-  })
+  });
+  $("#computer").click(function() {
+    player1 = $("#player1").val();
+    player2 = "computer";
+    createUser(player1);
+    createUser(player2);
+    active = player1;
+  });
   $("#roll").click(function() {
     players[active].roll();
     players[active].endGame();
-  })
+  });
   $("#end-turn").click(function() {
     players[active].endTurn();
-  })
-})
+
+  });
+  $("#end-game").click(function() {
+    clearBoard();
+  });
+});
 // game sequence:
 // 1. create two users
 // 2. user rolls
